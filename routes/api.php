@@ -3,11 +3,18 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\LoginController;
 
-Route::controller(UserController::class)->group(function(){
-    Route::post('/store', 'store');
-})->middleware('auth:sanctum');
+// Route::middleware(['api'])->post('/login', [LoginController::class, 'authenticate']);
+Route::group(['middleware' => ['web', 'api']], function () {
+    Route::post('/login', [LoginController::class, 'authenticate']);
+    // your routes here
+});
+// Route::controller(LoginController::class)->group(function () {
+//     Route::post('/login', 'authenticate');
+//     Route::post('/logout', 'logout');
+// });
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::group(['middleware' => ['auth:sanctum']], function() {
+    Route::resource('/user', UserController::class);
+});
